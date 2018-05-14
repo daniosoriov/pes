@@ -5,43 +5,43 @@ http://wordpress.org/extend/plugins/wp-pagenavi/
 */
 
 .wp-pagenavi {
-  clear: both;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  
-  -webkit-flex-flow: row wrap;
-  flex-flow: wrap;
-  margin-bottom: 30px !important;
+    clear: both;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-flow: row wrap;
+    flex-flow: wrap;
+    margin-bottom: 30px !important;
 }
 
 .wp-pagenavi a, .wp-pagenavi span {
-  text-decoration: none;
-  border: 1px solid #ddd;
-  padding: 5px 10px;
-  flex: 0 1 35px;
-  width: 35px;
-  height: 35px;
-  text-align: center;
-  border-radius: 5px;
-  margin-right: 5px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    flex: 0 1 35px;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    border-radius: 5px;
+    margin-right: 5px;
 }
 
 .wp-pagenavi span:first-of-type {
-  flex: 0 1 140px;
+    flex: 0 1 140px;
 }
 
 .wp-pagenavi a.first, .wp-pagenavi a.last {
-  flex: 0 1 80px;
+    flex: 0 1 80px;
 }
 
 .wp-pagenavi a:hover, .wp-pagenavi span.current {
-  border-color: #888;
+    border-color: #888;
 }
 
 .wp-pagenavi span.current {
-  font-weight: 800;
-  color: #333;
+    font-weight: 800;
+    color: #333;
 }
