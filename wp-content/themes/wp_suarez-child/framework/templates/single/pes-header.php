@@ -16,7 +16,10 @@ switch ( $post->post_type ) {
 		$previous_next = $previous . ( ( $previous && $next ) ? ' | ' : '' ) . $next;
 
 		$images            = get_field( 'pes_gallery' );
+		$images_hidden     = count( pes_get_gallery_hidden_images( $images ) );
+		$images            = pes_get_gallery_images( $images );
 		$number_images     = ' {' . count( $images ) . ' Photos}';
+		$number_images     .= ( ( $images_hidden ) ? ' {' . ( count( $images ) - $images_hidden ) . ' Public | ' . $images_hidden . ' Admin}' : '' );
 		$download          = ( get_query_var( 'gallery_action', '' ) == 'download' ) ? true : false;
 		$post_download_url = pes_download_gallery_url( $post_id );
 		break;

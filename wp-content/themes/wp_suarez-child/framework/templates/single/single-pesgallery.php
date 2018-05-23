@@ -5,10 +5,12 @@
 ?>
 <?php global $smof_data; ?>
 <?php
-$post_id  = get_the_ID();
-$images   = get_field( 'pes_gallery' );
-$user_ID  = get_current_user_id();
-$download = ( get_query_var( 'gallery_action', '' ) == 'download' ) ? true : false;
+$post_id        = get_the_ID();
+$images         = get_field( 'pes_gallery' );
+$images         = pes_get_gallery_images( $images );
+$user_ID        = get_current_user_id();
+$pes_user_admin = pes_user_is_admin();
+$download       = ( get_query_var( 'gallery_action', '' ) == 'download' ) ? true : false;
 
 $gallery_show   = get_query_var( 'gallery_show', 24 );
 $number_by_page = ( $gallery_show != 'all' ) ? $gallery_show : 24;
@@ -74,6 +76,9 @@ $login_attributes = array(
                                             <span class="item-title"><?php echo $image['title']; ?></span>
 											<?php if ( $image['caption'] ): ?>
                                                 <span class="item-caption"><?php echo shorten_string( $image['caption'], 13 ) ?></span>
+											<?php endif; ?>
+											<?php if ( $pes_user_admin && $image['only_admin'] ): ?>
+                                                <span class="item-caption text-only-admin">* This image is hidden from public.</span>
 											<?php endif; ?>
                                         </div>
                                     </a>

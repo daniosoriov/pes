@@ -5,11 +5,20 @@
 ?>
 <?php global $smof_data; ?>
 <?php
-$attachment_id = get_the_ID();
-$attachment    = get_post( $attachment_id );
-$metadata      = wp_get_attachment_metadata( $attachment_id );
-$large_image   = wp_get_attachment_image_src( $attachment_id, 'large' );
-$uploads       = wp_upload_dir();
+$attachment_id  = get_the_ID();
+$attachment     = get_post( $attachment_id );
+$only_admin     = get_field( 'pes_only_admin', $attachment );
+$pes_user_admin = pes_user_is_admin();
+//	echo '<pre>User: ' . print_r( $user, 1 ) . '</pre>';
+
+// If the user checking the page is not an admin and the photo is only admin, then redirect to homepage.
+if ( $only_admin && ! $pes_user_admin ) {
+	wp_redirect( home_url() );
+}
+
+$metadata    = wp_get_attachment_metadata( $attachment_id );
+$large_image = wp_get_attachment_image_src( $attachment_id, 'large' );
+$uploads     = wp_upload_dir();
 
 $caption = get_the_excerpt();
 if ( ! $caption ) {
@@ -29,11 +38,11 @@ $web_url = pes_download_attachment_url( $attachment_id, 'web' );
 $hr_url  = pes_download_attachment_url( $attachment_id );
 
 $parent         = get_post( $attachment->post_parent );
-$parent_gallery = array();
+$parent_gallery = [];
 $parent_gallery = get_field( 'pes_gallery', $attachment->post_parent );
+$parent_gallery = pes_get_gallery_images( $parent_gallery );
 $total_images   = count( $parent_gallery );
-$i              = 0;
-$prev_img       = $next_img = 0;
+$i              = $prev_img = $next_img = 0;
 $prev_img_url   = $next_img_url = '';
 $image_number   = 1;
 foreach ( $parent_gallery as $image ) {
@@ -94,6 +103,9 @@ $login_attributes = array(
 						<?php endif; ?>
 						<?php if ( $metadata['image_meta']['created_timestamp'] ): ?>
                             <p><?php echo date( 'F d, Y H:i', $metadata['image_meta']['created_timestamp'] ); ?></p>
+						<?php endif; ?>
+						<?php if ( $pes_user_admin && $only_admin ): ?>
+                            <p><span class="text-only-admin">* This image is hidden from public.</span></p>
 						<?php endif; ?>
 
                     </div>

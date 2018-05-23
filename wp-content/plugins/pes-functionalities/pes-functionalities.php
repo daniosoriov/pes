@@ -194,6 +194,61 @@ function pes_get_stats() {
 	return $content;
 }
 
+/**
+ * Determine if the current user is a PES admin based on the roles.
+ *
+ * @return bool true if it is PES admin.
+ */
+function pes_user_is_admin() {
+	$user = wp_get_current_user();
+
+	return boolval( count( array_intersect( $user->roles, array( 'administrator', 'pes_admin', 'um_pes-admin', 'pes_editor', 'um_pes-editor' ) ) ) > 0 );
+}
+
+/**
+ * Get the images to display for a certain gallery depending on the user seeing it.
+ *
+ * @param array $gallery the pes_gallery with all the images retrieved with get_field.
+ *
+ * @return array the array of images allowed to be seen by the current user.
+ */
+function pes_get_gallery_images( $gallery ) {
+	$images = $images_public = [];
+	foreach ( $gallery as $image ) {
+		$image_post          = get_post( $image['id'] );
+		$only_admin          = get_field( 'pes_only_admin', $image_post );
+		$image['only_admin'] = boolval( $only_admin );
+		$images[]            = $image;
+		if ( ! $only_admin ) {
+			$images_public[] = $image;
+		}
+	}
+	if ( pes_user_is_admin() ) {
+		$images_public = $images;
+	}
+
+	return $images_public;
+}
+
+function pes_get_gallery_hidden_images( $gallery ) {
+	if ( ! pes_user_is_admin() ) {
+		return [];
+	}
+	$images = $tmp = [];
+	foreach ( $gallery as $image ) {
+		$images[]            = $image['id'];
+		$tmp[ $image['id'] ] = $image;
+	}
+	$posts  = get_posts( [ 'include' => implode( ',', $images ), 'post_type' => 'attachment' ] );
+	$images = [];
+	foreach ( $posts as $image ) {
+		if ( get_field( 'pes_only_admin', $image ) ) {
+			$images[] = $tmp[ $image->ID ];
+		}
+	}
+
+	return $images;
+}
 
 /**
  * Add query filters to the gallery page.
@@ -1088,8 +1143,7 @@ function pes_insert_download_data( $photos, $size ) {
 	$user = wp_get_current_user();
 
 	// Ignore admins and inside users.
-	$role = $user->data->role;
-	if ( count( array_intersect( $user->roles, array( 'administrator', 'pes-admin', 'pes-editor' ) ) ) > 0 ) {
+	if ( count( array_intersect( $user->roles, array( 'administrator', 'pes_admin', 'um_pes-admin', 'pes_editor', 'um_pes-editor' ) ) ) > 0 ) {
 		return false;
 	}
 
